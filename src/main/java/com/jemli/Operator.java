@@ -1,10 +1,12 @@
+package com.jemli;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Fathi Jemli
  */
-class Operator {
+public class Operator {
     private String name;
     private List<PriceUnit> pricing = new ArrayList();
 
@@ -12,12 +14,12 @@ class Operator {
      * This method returns the best price unit provided by the current operator (pricing) for a specific number
      *
      * @param number
-     * @return PriceUnit
+     * @return com.jemli.PriceUnit
      */
     public PriceUnit bestPriceUnitFromOperator(String number) {
         double price = Double.MAX_VALUE;
         int similarity = 0, sim = 0;
-        PriceUnit bestPriceUnit = new PriceUnit();
+        PriceUnit bestPriceUnit = null;
         String cleanNumber = Utils.cleanNumber(number);
         for (PriceUnit priceUnit : this.getPricing()) {
             sim = Utils.stringSimilarityCoefficient(cleanNumber, priceUnit.getPrefix());
@@ -42,25 +44,34 @@ class Operator {
      * @return string
      */
     public static String bestPriceFromListOperators(List<Operator> operators, String number) {
-        int similarity = 0, sim = 0, bestOperatorIndex = Integer.MAX_VALUE, i = 0;
+        int similarity = 0, sim = 0, bestOperatorIndex = 0, i = 0;
         PriceUnit bestPriceUnit = new PriceUnit(), priceUnit = new PriceUnit();
         String cleanNumber = Utils.cleanNumber(number);
+        if (cleanNumber.length() == 0) {
+            return "Please put a valid phone number";
+        }
         for (Operator operator : operators) {
             i++;
             priceUnit = operator.bestPriceUnitFromOperator(number);
-            sim = Utils.stringSimilarityCoefficient(cleanNumber, priceUnit.getPrefix());
-            if (sim > similarity) {
-                bestPriceUnit = priceUnit;
-                bestOperatorIndex = i;
-                similarity = sim;
-            } else {
-                if (sim == similarity && similarity > 0 && priceUnit.getPrice() < bestPriceUnit.getPrice()) {
+            if (priceUnit != null) {
+                sim = Utils.stringSimilarityCoefficient(cleanNumber, priceUnit.getPrefix());
+                if (sim > similarity) {
                     bestPriceUnit = priceUnit;
                     bestOperatorIndex = i;
+                    similarity = sim;
+                } else {
+                    if (sim == similarity && similarity > 0 && priceUnit.getPrice() < bestPriceUnit.getPrice()) {
+                        bestPriceUnit = priceUnit;
+                        bestOperatorIndex = i;
+                    }
                 }
             }
         }
-        return "The best operator for number: " + number + " is operator N°: " + bestOperatorIndex;
+        if (bestOperatorIndex > 0) {
+            return "The best operator for number: " + number + " is operator N°: " + bestOperatorIndex + " (price: " + bestPriceUnit.getPrice() + ")";
+        } else {
+            return "Unable to find the adequate operator for this phone number";
+        }
     }
 
     public Operator() {

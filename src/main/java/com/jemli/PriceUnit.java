@@ -1,7 +1,9 @@
+package com.jemli;
+
 /**
  * @author Fathi Jemli
  */
-class PriceUnit {
+public class PriceUnit {
     private String prefix;
     private double price;
 

@@ -1,7 +1,9 @@
+package com.jemli;
+
 /**
  * @author Fathi Jemli
  */
-class Utils {
+public class Utils {
     /**
      * This method returns a number which describes how many characters in the beginning of each string are similar
      *
